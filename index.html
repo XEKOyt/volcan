@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Le Fagradalsfjall - Volcan Islandais</title>
+    <style>
+        :root {
+            --primary: #ff6b35;
+            --secondary: #2a9d8f;
+            --dark: #264653;
+            --light: #f8f9fa;
+            --accent: #e76f51;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--dark);
+            background-color: #f5f5f5;
+            overflow-x: hidden;
+        }
+        
+        header {
+            background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('https://cdnjs.cloudflare.com/ajax/libs/pexels-photo-api/1/volcano-background.jpg') center/cover;
+            color: var(--light);
+            text-align: center;
+            padding: 100px 20px;
+            position: relative;
+        }
+
+        header h1 {
+            font-size: 3.5rem;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+        
+        header p {
+            font-size: 1.2rem;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        nav {
+            background-color: var(--dark);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        nav ul {
+            display: flex;
+            justify-content: center;
+            list-style: none;
+        }
+        
+        nav a {
+            display: block;
+            color: var(--light);
+            text-decoration: none;
+            padding: 15px 20px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+        
+        nav a:hover, nav a.active {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        section {
+            padding: 60px 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.8s ease, transform 0.8s ease;
+        }
+        
+        section.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        h2 {
+            font-size: 2.5rem;
+            margin-bottom: 30px;
+            color: var(--primary);
+            text-align: center;
+            position: relative;
+            padding-bottom: 15px;
+        }
+        
+        h2::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 4px;
+            background-color: var(--secondary);
+            border-radius: 2px;
+        }
+        
+        h3 {
+            font-size: 1.8rem;
+            margin: 25px 0 15px;
+            color: var(--secondary);
+        }
+        
+        p {
+            margin-bottom: 20px;
+            font-size: 1.1rem;
+        }
+        
+        .highlight {
+            background-color: rgba(255, 107, 53, 0.1);
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 5px solid var(--primary);
+            margin: 30px 0;
+        }
+        
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin: 40px 0;
+        }
+        
+        .card {
+            background-color: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+        }
+        
+        .card-img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+        
+        .card-content {
+            padding: 20px;
+        }
+        
+        .card-title {
+            font-size: 1.4rem;
+            margin-bottom: 10px;
+            color: var(--dark);
+        }
+        
+        .map-container {
+            position: relative;
+            width: 100%;
+            height: 400px;
+            margin: 30px 0;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .map-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8);
+        }
+        
+        .timeline {
+            position: relative;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px 0;
+        }
+        
+        .timeline::after {
+            content: '';
+            position: absolute;
+            width: 6px;
+            background-color: var(--secondary);
+            top: 0;
+            bottom: 0;
+            left: 50%;
+            margin-left: -3px;
+        }
+        
+        .timeline-item {
+            padding: 10px 40px;
+            position: relative;
+            width: 50%;
+            opacity: 0;
+            transform: translateX(-50px);
+            transition: all 0.8s ease;
+        }
+        
+        .timeline-item.visible {
+            opacity: 1;
+            transform: translateX(0);
+        }
+        
+        .timeline-item:nth-child(odd) {
+            left: 0;
+        }
+        
+        .timeline-item:nth-child(even) {
+            left: 50%;
+            transform: translateX(50px);
+        }
+        
+        .timeline-item:nth-child(even).visible {
+            transform: translateX(0);
+        }
+        
+        .timeline-item::after {
+            content: '';
+            position: absolute;
+            width: 25px;
+            height: 25px;
+            right: -17px;
+            background-color: white;
+            border: 4px solid var(--primary);
+            top: 15px;
+            border-radius: 50%;
+            z-index: 1;
+        }
+        
+        .timeline-item:nth-child(even)::after {
+            left: -16px;
+        }
+        
+        .timeline-content {
+            padding: 20px;
+            background-color: white;
+            position: relative;
+            border-radius: 6px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .timeline-content h3 {
+            margin-top: 0;
+        }
+        
+        .timeline-date {
+            color: var(--primary);
+            font-weight: bold;
+        }
+        
+        .bonus-info {
+            background-color: rgba(42, 157, 143, 0.1);
+            padding: 30px;
+            border-radius: 8px;
+            margin: 40px 0;
+        }
+        
+        .fact-list {
+            list-style: none;
+        }
+        
+        .fact-list li {
+            position: relative;
+            padding: 10px 0 10px 35px;
+            margin-bottom: 15px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        }
+        
+        .fact-list li::before {
+            content: '🌋';
+            position: absolute;
+            left: 0;
+            top: 12px;
+        }
+        
+        footer {
+            background-color: var(--dark);
+            color: var(--light);
+            text-align: center;
+            padding: 40px 20px;
+            margin-top: 60px;
+        }
+        
+        footer p {
+            margin: 10px 0;
+        }
+        
+        .btn-top {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background-color: var(--primary);
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            font-size: 1.5rem;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-top.visible {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 2.5rem;
+            }
+            
+            h2 {
+                font-size: 2rem;
+            }
+            
+            nav ul {
+                flex-direction: column;
+            }
+            
+            .timeline::after {
+                left: 31px;
+            }
+            
+            .timeline-item {
+                width: 100%;
+                padding-left: 70px;
+                padding-right: 25px;
+            }
+            
+            .timeline-item:nth-child(odd),
+            .timeline-item:nth-child(even) {
+                left: 0;
+            }
+            
+            .timeline-item::after,
+            .timeline-item:nth-child(even)::after {
+                left: 15px;
+            }
+        }
+
+        /* Animation pour la lave */
+        .lava-animation {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 60px;
+            background: linear-gradient(to top, #ff4500, #ff7700);
+            clip-path: polygon(
+                0% 100%,
+                5% 90%,
+                10% 95%,
+                15% 85%,
+                20% 95%,
+                25% 90%,
+                30% 100%,
+                35% 90%,
+                40% 95%,
+                45% 90%,
+                50% 100%,
+                55% 85%,
+                60% 95%,
+                65% 85%,
+                70% 90%,
+                75% 100%,
+                80% 95%,
+                85% 85%,
+                90% 95%,
+                95% 90%,
+                100% 100%
+            );
+            animation: lava 3s infinite alternate;
+        }
+
+        @keyframes lava {
+            0% {
+                clip-path: polygon(
+                    0% 100%,
+                    5% 90%,
+                    10% 95%,
+                    15% 85%,
+                    20% 95%,
+                    25% 90%,
+                    30% 100%,
+                    35% 90%,
+                    40% 95%,
+                    45% 90%,
+                    50% 100%,
+                    55% 85%,
+                    60% 95%,
+                    65% 85%,
+                    70% 90%,
+                    75% 100%,
+                    80% 95%,
+                    85% 85%,
+                    90% 95%,
+                    95% 90%,
+                    100% 100%
+                );
+            }
+            100% {
+                clip-path: polygon(
+                    0% 100%,
+                    5% 95%,
+                    10% 85%,
+                    15% 95%,
+                    20% 90%,
+                    25% 100%,
+                    30% 90%,
+                    35% 95%,
+                    40% 85%,
+                    45% 95%,
+                    50% 90%,
+                    55% 100%,
+                    60% 85%,
+                    65% 95%,
+                    70% 100%,
+                    75% 90%,
+                    80% 85%,
+                    85% 95%,
+                    90% 85%,
+                    95% 95%,
+                    100% 100%
+                );
+            }
+        }
+    </style>
+</head>
+<body>
+    <header id="accueil">
+        <h1>Le Fagradalsfjall</h1>
+        <p>Un volcan effusif situé au sud-ouest de l'Islande, proche de Reykjavik</p>
+        <div class="lava-animation"></div>
+    </header>
+
+    <nav id="navbar">
+        <ul>
+            <li><a href="#accueil" class="nav-link active">Accueil</a></li>
+            <li><a href="#caracteristiques" class="nav-link">Caractéristiques</a></li>
+            <li><a href="#eruptions" class="nav-link">Éruptions</a></li>
+            <li><a href="#bonus" class="nav-link">Infos Bonus</a></li>
+        </ul>
+    </nav>
+
+    <section id="caracteristiques" class="section">
+        <h2>Caractéristiques du Fagradalsfjall</h2>
+        
+          <div class="map-container">
+  <iframe
+    src="https://www.openstreetmap.org/export/embed.html?bbox=-22.274,63.900,-22.244,63.930&layer=mapnik&marker=63.915,-22.259"
+    style="border:1px solid rgba(0,0,0,0.1); width:100%; height:100%;"
+    allowfullscreen
+    loading="lazy">
+  </iframe>
+  <p style="font-size:0.9rem; text-align:right; margin-top:4px;">
+    © OpenStreetMap contributors
+  </p>
+</div>
+
+        <p>Comme précisé dans l'introduction, le Fagradalsfjall est situé au sud-ouest de l'Islande à 35 km au sud-ouest de la capitale Reykjavik, plus précisément dans la vallée de Geldingadalur.</p>
+        
+        <p>Vous observerez également que le volcan est loin de tout contact avec la population urbaine.</p>
+
+        <div class="highlight">
+            <h3>Données techniques</h3>
+            <p>Ce volcan se situe à 385 m d'altitude aux coordonnées suivantes : 63° 54′ 09″ nord, 22° 16′ 29″ ouest</p>
+        </div>
+
+        <p>Par ailleurs, le Fagradalsfjall est un volcan effusif toujours en activité. Pour ceux qui n'auraient pas appris leur cours, un volcan effusif est un volcan qui lors d'une éruption, rejette de la lave fluide, qui s'écoule le long des pentes. À l'inverse d'un volcan explosif qui lors de l'éruption, rejette des grandes quantités de cendres ou de nuées ardentes.</p>
+
+        <p>Cependant, même lorsque aucune éruption se produit, il y a parfois de la vapeur et des gaz qui émanent du volcan.</p>
+
+        <div class="grid-container">
+            <div class="card">
+                <img src="effusif.jpg" alt="Volcan effusif" class="card-img">
+                <div class="card-content">
+                    <h3 class="card-title">Volcan Effusif</h3>
+                    <p>Rejette de la lave fluide qui s'écoule le long des pentes.</p>
+                </div>
+            </div>
+            <div class="card">
+                <img src="46292542-explosif-fureur-dans-le-nuit-volcan-eruption-s-enflamme-la-terre-pouvoir-creation-une-ardent-photo.jpg" alt="Volcan explosif" class="card-img">
+                <div class="card-content">
+                    <h3 class="card-title">Volcan Explosif</h3>
+                    <p>Rejette des grandes quantités de cendres ou de nuées ardentes.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="eruptions" class="section">
+        <h2>Éruptions Récentes</h2>
+        
+        <p>Le Fagradalsfjall est toujours actif et a eu plusieurs explosions très récentes. La dernière éruption datant de 2023.</p>
+
+        <div class="timeline">
+            <div class="timeline-item">
+                <div class="timeline-content">
+                    <h3>Éruption de 2023</h3>
+                    <p class="timeline-date">Du 10 juillet au 5 août 2023</p>
+                    <p>Les premiers symptômes de cette éruption furent des tremblements de terre intenses durant plusieurs jours, après cela une fissure s'ouvrit sur environ 900 mètres. Cette fissure laissa sortir de la lave.</p>
+                </div>
+            </div>
+            
+            <div class="timeline-item">
+                <div class="timeline-content">
+                    <h3>Éruption de 2022</h3>
+                    <p class="timeline-date">Du 3 août au 21 août 2022</p>
+                    <p>Les signes d'une éruption imminente ont commencé le 22 décembre 2021, quatre jours après l'éruption de 2021. Comme pour les autres éruptions, les premiers symptômes furent des tremblements de terre. Le magma est apparu le 3 août.</p>
+                </div>
+            </div>
+            
+            <div class="timeline-item">
+                <div class="timeline-content">
+                    <h3>Éruption de 2021</h3>
+                    <p class="timeline-date">Du 19 mars au 18 décembre 2021</p>
+                    <p>Cette éruption était la première depuis le 12ème siècle ! Comme pour les autres éruptions, une fissure s'est créée et du magma en est sorti. Du soufre (gaz toxique) a également émané, mettant en danger les touristes venus admirer l'éruption. Pour éviter tout danger, les autorités ont limité l'accès au volcan. L'éruption a commencé à se calmer le 2 mai.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="bonus" class="section">
+        <h2>Informations Bonus</h2>
+        
+        <div class="bonus-info">
+            <ul class="fact-list">
+                <li>Le Fagradalsfjall est un volcan toujours actif, ayant connu plusieurs éruptions récentes depuis 2021. Après 815 ans de sommeil, la première éruption du cycle actuel a débuté le 19 mars 2021 dans la vallée de Gelding Dalir.</li>
+                
+                <li>Bien que le Fagradalsfjall soit très isolé, il est l'un des endroits les plus touristiques d'Islande.</li>
+                
+                <li>Il existe un musée parlant des volcans actifs d'Islande, situé dans la ville de Hvolsvöllur.</li>
+                
+                <li>Le mot "Fagradalsfjall" peut se traduire par "la montagne de la belle vallée".</li>
+                
+                <li>Le Fagradalsfjall est parfois considéré comme un système volcanique à lui tout seul.</li>
+                
+                <li>Le volcan fait 385 mètres de haut, ce qui est "à peine" plus grand que la tour Eiffel qui mesure 324 mètres de haut.</li>
+            </ul>
+        </div>
+    </section>
+
+    <footer>
+        <p>Présentation sur le Fagradalsfjall - Volcan Islandais</p>
+        <p>&copy; 2025 - Tous droits réservés</p>
+    </footer>
+
+    <a href="#accueil" class="btn-top" id="btnTop">↑</a>
+
+    <script>
+        // Navigation active
+        const sections = document.querySelectorAll('section');
+        const navLinks = document.querySelectorAll('.nav-link');
+        const btnTop = document.getElementById('btnTop');
+        
+        window.addEventListener('scroll', () => {
+            // Bouton retour en haut
+            if (window.scrollY > 300) {
+                btnTop.classList.add('visible');
+            } else {
+                btnTop.classList.remove('visible');
+            }
+            
+            // Navigation active
+            let current = '';
+            
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop - 100;
+                const sectionHeight = section.clientHeight;
+                
+                if (scrollY >= sectionTop) {
+                    current = section.getAttribute('id');
+                }
+                
+                // Animation d'apparition
+                if (scrollY >= sectionTop - 300) {
+                    section.classList.add('visible');
+                }
+            });
+            
+            navLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href').substring(1) === current) {
+                    link.classList.add('active');
+                }
+            });
+            
+            // Animation des items de la timeline
+            const timelineItems = document.querySelectorAll('.timeline-item');
+            timelineItems.forEach(item => {
+                const itemTop = item.offsetTop + item.parentElement.offsetTop - 600;
+                if (scrollY >= itemTop) {
+                    item.classList.add('visible');
+                }
+            });
+        });
+        
+        // Smooth scroll
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                const targetId = this.getAttribute('href');
+                const targetElement = document.querySelector(targetId);
+                
+                window.scrollTo({
+                    top: targetElement.offsetTop - 60,
+                    behavior: 'smooth'
+                });
+            });
+        });
+        
+        // Animation initiale
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                const section = document.querySelector('section');
+                section.classList.add('visible');
+            }, 300);
+        });
+    </script>
+</body>
+</html>
